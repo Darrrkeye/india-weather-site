@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Live Scores</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .match { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🏏 Cricket Live Scores</h1>
+    {% if matches %}
+        {% for match in matches %}
+            <div class="match">
+                <h2>{{ match.name }}</h2>
+                <p><strong>Status:</strong> {{ match.status }}</p>
+                <p><strong>Date:</strong> {{ match.date }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No matches found.</p>
+    {% endif %}
+</body>
+</html>
