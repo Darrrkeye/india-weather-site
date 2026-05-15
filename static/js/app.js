@@ -69,6 +69,56 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function scoreLocation(location, query) {
+        const normalized = query.trim().toLowerCase();
+        if (!normalized) {
+            return -1;
+        }
+
+        const name = location.name.toLowerCase();
+        const state = location.state.toLowerCase();
+        const key = location.key.toLowerCase();
+        const tagline = location.tagline.toLowerCase();
+        const nameWords = name.split(/[\s-]+/);
+        const stateWords = state.split(/[\s-]+/);
+
+        if (name === normalized) {
+            return 100;
+        }
+        if (state === normalized) {
+            return 95;
+        }
+        if (key === normalized) {
+            return 92;
+        }
+        if (name.startsWith(normalized)) {
+            return 90;
+        }
+        if (state.startsWith(normalized)) {
+            return 82;
+        }
+        if (key.startsWith(normalized)) {
+            return 80;
+        }
+        if (nameWords.some((word) => word.startsWith(normalized))) {
+            return 72;
+        }
+        if (stateWords.some((word) => word.startsWith(normalized))) {
+            return 66;
+        }
+        if (name.includes(` ${normalized}`)) {
+            return 58;
+        }
+        if (state.includes(` ${normalized}`)) {
+            return 54;
+        }
+        if (normalized.length >= 3 && tagline.includes(normalized)) {
+            return 20;
+        }
+
+        return -1;
+    }
+
     function findMatches(query) {
         const normalized = query.trim().toLowerCase();
         if (!normalized) {
@@ -76,12 +126,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         return locations
-            .filter((location) =>
-                location.name.toLowerCase().includes(normalized) ||
-                location.state.toLowerCase().includes(normalized) ||
-                location.tagline.toLowerCase().includes(normalized) ||
-                location.key.toLowerCase().includes(normalized)
-            )
+            .map((location) => ({
+                ...location,
+                score: scoreLocation(location, normalized),
+            }))
+            .filter((location) => location.score >= 0)
+            .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
             .slice(0, 6);
     }
 
