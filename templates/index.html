@@ -1,26 +1,164 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cricket Live Scores</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .match { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
-    </style>
-</head>
-<body>
-    <h1>🏏 Cricket Live Scores</h1>
-    {% if matches %}
-        {% for match in matches %}
-            <div class="match">
-                <h2>{{ match.name }}</h2>
-                <p><strong>Status:</strong> {{ match.status }}</p>
-                <p><strong>Date:</strong> {{ match.date }}</p>
+{% extends "layout.html" %}
+
+{% block title %}India Travel Climate Guide{% endblock %}
+
+{% block content %}
+<main class="page">
+    <section class="hero hero-top">
+        <article class="panel intro-panel">
+            <p class="eyebrow">India Travel Climate Guide</p>
+            <h1>Build your trip around weather, air quality, and standout places.</h1>
+            <p class="lead">
+                Pick a destination from the map or dropdown to explore current weather, AQI, a short forecast,
+                and travel highlights for some of India's most visited cities.
+            </p>
+
+            <form class="selector-form" method="get" action="/">
+                <label for="city" class="subtle">Choose a place</label>
+                <select name="city" id="city">
+                    {% for key, location in locations.items() %}
+                    <option value="{{ key }}" {% if key == selected_key %}selected{% endif %}>
+                        {{ location.name }}, {{ location.state }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Explore city</button>
+            </form>
+
+            <div class="quick-facts">
+                <div class="fact-card">
+                    <span class="fact-label">Best time</span>
+                    <strong>{{ selected_location.best_time }}</strong>
+                </div>
+                <div class="fact-card">
+                    <span class="fact-label">Coordinates</span>
+                    <strong>{{ selected_location.lat }}, {{ selected_location.lon }}</strong>
+                </div>
+                <div class="fact-card">
+                    <span class="fact-label">State</span>
+                    <strong>{{ selected_location.state }}</strong>
+                </div>
             </div>
-        {% endfor %}
+        </article>
+
+        <aside class="panel map-card">
+            <div class="map-surface">
+                <div class="map-shape"></div>
+                {% for key, location in locations.items() %}
+                <a
+                    class="city-point {% if key == selected_key %}active{% endif %}"
+                    href="/?city={{ key }}"
+                    style="left: {{ location.x }}; top: {{ location.y }};"
+                    aria-label="View details for {{ location.name }}"
+                >
+                    <span class="marker-number">{{ loop.index }}</span>
+                    <span class="marker-label">{{ location.name }}</span>
+                </a>
+                {% endfor %}
+            </div>
+            <div class="map-caption">
+                <p class="eyebrow">Interactive India Map</p>
+                <p class="subtle">
+                    Click any marker to move between cities and compare live travel conditions.
+                </p>
+            </div>
+        </aside>
+    </section>
+
+    <section class="city-banner panel">
+        <div>
+            <p class="eyebrow">Selected Destination</p>
+            <h2>{{ selected_location.name }}</h2>
+            <p class="subtle">{{ selected_location.tagline }}</p>
+        </div>
+        <div class="banner-chip">Places to visit: {{ selected_location.places|length }}</div>
+    </section>
+
+    {% if live_data %}
+    <section class="dashboard-grid">
+        <article class="panel stat-panel weather-panel">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow">Live Weather</p>
+                    <h3>{{ live_data.description }}</h3>
+                </div>
+                <p class="temperature">{{ live_data.temperature }}&deg;C</p>
+            </div>
+
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <span>Feels like</span>
+                    <strong>{{ live_data.feels_like }}&deg;C</strong>
+                </div>
+                <div class="metric-card">
+                    <span>Humidity</span>
+                    <strong>{{ live_data.humidity }}%</strong>
+                </div>
+                <div class="metric-card">
+                    <span>Wind</span>
+                    <strong>{{ live_data.wind_speed }} m/s</strong>
+                </div>
+                <div class="metric-card">
+                    <span>Sunrise</span>
+                    <strong>{{ live_data.sunrise[-5:] if live_data.sunrise else "N/A" }}</strong>
+                </div>
+                <div class="metric-card">
+                    <span>Sunset</span>
+                    <strong>{{ live_data.sunset[-5:] if live_data.sunset else "N/A" }}</strong>
+                </div>
+            </div>
+        </article>
+
+        <article class="panel stat-panel aqi-panel">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow">Air Quality</p>
+                    <h3>{{ live_data.aqi_label }}</h3>
+                </div>
+                <p class="aqi-value">{{ live_data.aqi_index }}</p>
+            </div>
+
+            <p class="subtle">{{ live_data.aqi_note }}</p>
+
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <span>PM2.5</span>
+                    <strong>{{ live_data.pm2_5 }}</strong>
+                </div>
+                <div class="metric-card">
+                    <span>PM10</span>
+                    <strong>{{ live_data.pm10 }}</strong>
+                </div>
+            </div>
+        </article>
+
+        <article class="panel forecast-panel">
+            <p class="eyebrow">5 Day Forecast</p>
+            <h3>Temperature outlook</h3>
+            <div class="forecast-list">
+                {% for day in live_data.forecast %}
+                <div class="forecast-card">
+                    <span>{{ day.date }}</span>
+                    <strong>{{ day.max }}&deg; / {{ day.min }}&deg;</strong>
+                </div>
+                {% endfor %}
+            </div>
+        </article>
+
+        <aside class="panel places-panel">
+            <p class="eyebrow">Places To See</p>
+            <h3>Top spots in {{ selected_location.name }}</h3>
+            <ul class="places-list">
+                {% for place in selected_location.places %}
+                <li>{{ place }}</li>
+                {% endfor %}
+            </ul>
+        </aside>
+    </section>
     {% else %}
-        <p>No matches found.</p>
+    <section class="panel status-panel">
+        <p>{{ status_message }}</p>
+    </section>
     {% endif %}
-</body>
-</html>
+</main>
+{% endblock %}
