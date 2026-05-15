@@ -7,20 +7,58 @@ from .services.weather_service import fetch_live_data
 main = Blueprint("main", __name__)
 
 
+def score_location(key, location, search_query):
+    normalized = search_query.strip().lower()
+    if not normalized:
+        return -1
+
+    name = location["name"].lower()
+    state = location["state"].lower()
+    tagline = location["tagline"].lower()
+    key = key.lower()
+    name_words = name.split()
+    state_words = state.split()
+
+    if name == normalized:
+        return 100
+    if state == normalized:
+        return 95
+    if key == normalized:
+        return 92
+    if name.startswith(normalized):
+        return 90
+    if state.startswith(normalized):
+        return 82
+    if key.startswith(normalized):
+        return 80
+    if any(word.startswith(normalized) for word in name_words):
+        return 72
+    if any(word.startswith(normalized) for word in state_words):
+        return 66
+    if name.find(f" {normalized}") != -1:
+        return 58
+    if state.find(f" {normalized}") != -1:
+        return 54
+    if len(normalized) >= 3 and normalized in tagline:
+        return 20
+    return -1
+
+
 def filter_locations(search_query):
     if not search_query:
         return LOCATIONS
 
-    normalized = search_query.strip().lower()
-    filtered = {
-        key: location
+    matches = [
+        (key, location, score_location(key, location, search_query))
         for key, location in LOCATIONS.items()
-        if normalized in key
-        or normalized in location["name"].lower()
-        or normalized in location["state"].lower()
-        or normalized in location["tagline"].lower()
-    }
-    return filtered or LOCATIONS
+    ]
+    filtered = [(key, location, score) for key, location, score in matches if score >= 0]
+    filtered.sort(key=lambda item: (-item[2], item[1]["name"]))
+
+    if not filtered:
+        return LOCATIONS
+
+    return {key: location for key, location, _ in filtered}
 
 
 @main.route("/")
