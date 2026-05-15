@@ -13,7 +13,22 @@
                 and travel highlights for some of India's most visited cities.
             </p>
 
+            <form class="search-form" method="get" action="/">
+                <label for="search" class="subtle">Search city or state</label>
+                <div class="search-row">
+                    <input
+                        type="text"
+                        id="search"
+                        name="search"
+                        value="{{ search_query }}"
+                        placeholder="Try Goa, Rajasthan, Chennai..."
+                    >
+                    <button type="submit">Search</button>
+                </div>
+            </form>
+
             <form class="selector-form" method="get" action="/">
+                <input type="hidden" name="search" value="{{ search_query }}">
                 <label for="city" class="subtle">Choose a place</label>
                 <select name="city" id="city">
                     {% for key, location in locations.items() %}
@@ -24,6 +39,10 @@
                 </select>
                 <button type="submit">Explore city</button>
             </form>
+
+            <p class="results-line subtle">
+                Showing {{ visible_count }} of {{ total_locations }} destinations{% if search_query %} for "{{ search_query }}"{% endif %}.
+            </p>
 
             <div class="quick-facts">
                 <div class="fact-card">
@@ -61,6 +80,9 @@
                 <p class="subtle">
                     Click any marker to move between cities and compare live travel conditions.
                 </p>
+                {% if search_query %}
+                <a class="clear-search" href="/">Clear search</a>
+                {% endif %}
             </div>
         </aside>
     </section>
@@ -71,7 +93,10 @@
             <h2>{{ selected_location.name }}</h2>
             <p class="subtle">{{ selected_location.tagline }}</p>
         </div>
-        <div class="banner-chip">Places to visit: {{ selected_location.places|length }}</div>
+        <div class="banner-meta">
+            <div class="banner-chip">Places to visit: {{ selected_location.places|length }}</div>
+            <div class="banner-chip banner-chip-soft">{{ selected_location.state }}</div>
+        </div>
     </section>
 
     {% if live_data %}
@@ -140,6 +165,7 @@
                 <div class="forecast-card">
                     <span>{{ day.date }}</span>
                     <strong>{{ day.max }}&deg; / {{ day.min }}&deg;</strong>
+                    <small>High / Low</small>
                 </div>
                 {% endfor %}
             </div>

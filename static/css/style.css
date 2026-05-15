@@ -102,6 +102,7 @@ h3 {
     margin-top: 22px;
 }
 
+input,
 select,
 button {
     border: none;
@@ -110,6 +111,7 @@ button {
     font-size: 1rem;
 }
 
+input,
 select {
     min-width: 240px;
     background: var(--surface-strong);
@@ -117,11 +119,35 @@ select {
     box-shadow: inset 0 0 0 1px rgba(28, 47, 56, 0.12);
 }
 
+input:focus,
+select:focus {
+    outline: 2px solid rgba(47, 125, 106, 0.25);
+}
+
 button {
     cursor: pointer;
     color: #fff7f1;
     background: linear-gradient(135deg, var(--accent), var(--accent-deep));
     box-shadow: 0 10px 24px rgba(167, 77, 31, 0.28);
+}
+
+.search-form {
+    margin-top: 20px;
+}
+
+.search-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.search-row input {
+    flex: 1 1 320px;
+}
+
+.results-line {
+    margin: 14px 0 0;
 }
 
 .quick-facts {
@@ -179,6 +205,7 @@ button {
     transform: translate(-50%, -50%);
     text-decoration: none;
     color: var(--text);
+    z-index: 1;
 }
 
 .marker-number {
@@ -217,12 +244,24 @@ button {
     margin-top: 22px;
 }
 
+.banner-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
 .banner-chip {
     padding: 12px 18px;
     border-radius: 999px;
     background: rgba(47, 125, 106, 0.12);
     color: var(--green);
     font-weight: 700;
+}
+
+.banner-chip-soft {
+    background: rgba(207, 106, 47, 0.12);
+    color: var(--accent-deep);
 }
 
 .section-head {
@@ -252,11 +291,28 @@ button {
     gap: 14px;
 }
 
+.forecast-card strong {
+    display: block;
+    margin-bottom: 6px;
+}
+
+.forecast-card small {
+    color: var(--muted);
+}
+
 .places-list {
     margin: 0;
     padding-left: 20px;
     color: var(--muted);
     line-height: 1.9;
+}
+
+.clear-search {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--accent-deep);
+    font-weight: 700;
+    text-decoration: none;
 }
 
 .status-panel {
@@ -292,6 +348,7 @@ button {
     }
 
     .city-banner,
+    .banner-meta,
     .section-head {
         flex-direction: column;
     }
