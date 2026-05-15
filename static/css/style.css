@@ -142,8 +142,59 @@ button {
     margin-top: 10px;
 }
 
-.search-row input {
+.search-box {
+    position: relative;
     flex: 1 1 320px;
+}
+
+.search-row input {
+    width: 100%;
+}
+
+.search-suggestions {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    display: none;
+    padding: 8px;
+    border-radius: 22px;
+    background: rgba(255, 250, 242, 0.98);
+    border: 1px solid var(--line);
+    box-shadow: 0 18px 36px rgba(28, 47, 56, 0.12);
+    z-index: 10;
+}
+
+.search-suggestions.show {
+    display: block;
+}
+
+.suggestion-item {
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    border-radius: 16px;
+    background: transparent;
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.suggestion-item:hover,
+.suggestion-item.active {
+    background: rgba(47, 125, 106, 0.12);
+}
+
+.suggestion-item strong,
+.suggestion-item span {
+    display: block;
+}
+
+.suggestion-item span {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 0.92rem;
 }
 
 .results-line {

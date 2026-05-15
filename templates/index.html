@@ -16,13 +16,20 @@
             <form class="search-form" method="get" action="/">
                 <label for="search" class="subtle">Search city or state</label>
                 <div class="search-row">
-                    <input
-                        type="text"
-                        id="search"
-                        name="search"
-                        value="{{ search_query }}"
-                        placeholder="Try Goa, Rajasthan, Chennai..."
-                    >
+                    <div class="search-box">
+                        <input
+                            type="text"
+                            id="search"
+                            name="search"
+                            value="{{ search_query }}"
+                            placeholder="Try Goa, Rajasthan, Chennai..."
+                            autocomplete="off"
+                            aria-autocomplete="list"
+                            aria-expanded="false"
+                            aria-controls="search-suggestions"
+                        >
+                        <div id="search-suggestions" class="search-suggestions" role="listbox"></div>
+                    </div>
                     <button type="submit">Search</button>
                 </div>
             </form>
@@ -187,4 +194,5 @@
     </section>
     {% endif %}
 </main>
+<script id="locations-data" type="application/json">{{ all_locations | tojson }}</script>
 {% endblock %}

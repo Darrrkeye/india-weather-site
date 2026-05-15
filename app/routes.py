@@ -38,6 +38,7 @@ def index():
     return render_template(
         "index.html",
         locations=visible_locations,
+        all_locations=LOCATIONS,
         total_locations=len(LOCATIONS),
         visible_count=len(visible_locations),
         selected_key=selected_key,
